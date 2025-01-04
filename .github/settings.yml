@@ -5,5 +5,3 @@ repository:
   description: This component is responsible for provisioning AWS Network Firewall resources, including Network Firewall, firewall policy, rule groups, and logging configuration
   homepage: https://cloudposse.com/accelerate
   topics: terraform, terraform-component
-
-
