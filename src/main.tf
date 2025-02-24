@@ -30,8 +30,8 @@ module "network_firewall" {
   source  = "cloudposse/network-firewall/aws"
   version = "0.3.2"
 
-  vpc_id     = local.vpc_outputs.vpc_id
-  subnet_ids = local.firewall_subnet_ids
+  vpc_id     = var.vpc_id
+  subnet_ids = var.subnet_ids
 
   network_firewall_name                     = var.network_firewall_name
   network_firewall_description              = var.network_firewall_description
