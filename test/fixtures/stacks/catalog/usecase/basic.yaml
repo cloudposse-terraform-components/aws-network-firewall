@@ -1,0 +1,61 @@
+components:
+  terraform:
+    network-firewall/basic:
+      metadata:
+        component: network-firewall
+      vars:
+        enabled: true
+        vpc_component_name: vpc
+        firewall_subnet_name: "firewall"
+        stateful_default_actions:
+          - "aws:alert_strict"
+        stateless_default_actions:
+          - "aws:forward_to_sfe"
+        stateless_fragment_default_actions:
+          - "aws:forward_to_sfe"
+        stateless_custom_actions: []
+        delete_protection: false
+        firewall_policy_change_protection: false
+        subnet_change_protection: false
+        logging_config: []
+        rule_group_config:
+          stateful-packet-inspection:
+            capacity: 50
+            name: stateful-packet-inspection
+            description: "Stateful inspection of packets"
+            type: "STATEFUL"
+            rule_group:
+              stateful_rule_options:
+                rule_order: "STRICT_ORDER"
+              rules_source:
+                stateful_rule: []
+                  # - action: "DROP"
+                  #   header:
+                  #     destination: "124.1.1.24/32"
+                  #     destination_port: 53
+                  #     direction: "ANY"
+                  #     protocol: "TCP"
+                  #     source: "1.2.3.4/32"
+                  #     source_port: 53
+                  #   rule_option:
+                  #     keyword: "sid:1"
+                  # - action: "PASS"
+                  #   header:
+                  #     destination: "ANY"
+                  #     destination_port: "ANY"
+                  #     direction: "ANY"
+                  #     protocol: "TCP"
+                  #     source: "10.10.192.0/19"
+                  #     source_port: "ANY"
+                  #   rule_option:
+                  #     keyword: "sid:2"
+                  # - action: "PASS"
+                  #   header:
+                  #     destination: "ANY"
+                  #     destination_port: "ANY"
+                  #     direction: "ANY"
+                  #     protocol: "TCP"
+                  #     source: "10.10.224.0/19"
+                  #     source_port: "ANY"
+                  #   rule_option:
+                  #     keyword: "sid:3"
