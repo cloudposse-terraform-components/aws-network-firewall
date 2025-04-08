@@ -3,9 +3,14 @@ variable "region" {
   description = "AWS Region"
 }
 
-variable "vpc_component_name" {
+variable "vpc_id" {
   type        = string
-  description = "The name of a VPC component where the Network Firewall is provisioned"
+  description = "The unique identifier of the VPC where AWS Network Firewall should create the firewall."
+}
+
+variable "firewall_subnet_ids" {
+  type        = list(string)
+  description = "List of subnet IDs for firewall endpoints."
 }
 
 variable "network_firewall_name" {
