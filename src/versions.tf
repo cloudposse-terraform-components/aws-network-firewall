@@ -8,5 +8,9 @@ terraform {
       # https://github.com/hashicorp/terraform-provider-aws/blob/v6.5.0/CHANGELOG.md
       version = ">= 6.5.0"
     }
+    null = {
+      source  = "hashicorp/null"
+      version = ">= 3.0"
+    }
   }
 }
