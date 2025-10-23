@@ -13,11 +13,6 @@ variable "transit_gateway_component_name" {
   type        = string
   description = "The name of a Transit Gateway component to attach the Network Firewall to. Either 'vpc_component_name' or 'transit_gateway_component_name' must be provided, but not both"
   default     = null
-
-  validation {
-    condition     = var.transit_gateway_component_name == null || can(regex("^[a-zA-Z0-9-_]+$", var.transit_gateway_component_name))
-    error_message = "The transit_gateway_component_name must contain only alphanumeric characters, hyphens, and underscores."
-  }
 }
 
 variable "network_firewall_name" {
