@@ -30,13 +30,22 @@ locals {
     }
   } : {}
 
-  # VPC-specific outputs (only used in VPC mode)
+  # VPC-specific outputs (only used in VPC mode
   vpc_outputs         = local.is_vpc_mode ? module.vpc.outputs : {}
   firewall_subnet_ids = local.is_vpc_mode ? try(local.vpc_outputs.named_private_subnets_map[var.firewall_subnet_name], []) : []
 
   # Transit Gateway-specific outputs (only used in TGW mode)
   transit_gateway_outputs = local.is_tgw_mode ? module.transit_gateway.outputs : {}
   transit_gateway_id      = local.is_tgw_mode ? try(local.transit_gateway_outputs.transit_gateway_id, null) : null
+
+  # Availability Zone IDs for TGW mode
+  # If user provided explicit AZ IDs, use those
+  # Otherwise, auto-select all available AZs in the region
+  availability_zone_ids = local.is_tgw_mode ? (
+    length(var.availability_zone_ids) > 0
+    ? var.availability_zone_ids
+    : try(data.aws_availability_zones.available[0].zone_ids, [])
+  ) : []
 }
 
 module "network_firewall" {
@@ -50,8 +59,9 @@ module "network_firewall" {
 
   # Transit Gateway mode: attach firewall directly to Transit Gateway
   # Uses availability_zone_ids instead of subnet_ids
-  transit_gateway_id   = local.transit_gateway_id
-  availability_zone_ids = local.is_tgw_mode ? var.availability_zone_ids : []
+  # AZ IDs are either explicitly provided or auto-selected from available AZs
+  transit_gateway_id    = local.transit_gateway_id
+  availability_zone_ids = local.availability_zone_ids
 
   network_firewall_name                     = var.network_firewall_name
   network_firewall_description              = var.network_firewall_description

@@ -121,7 +121,15 @@ variable "firewall_subnet_name" {
 
 variable "availability_zone_ids" {
   type        = list(string)
-  description = "List of Availability Zone IDs where firewall endpoints will be created for a transit gateway-attached firewall. Required when using 'transit_gateway_component_name', not used when using 'vpc_component_name'"
+  description = <<-EOT
+    List of Availability Zone IDs where firewall endpoints will be created for a transit gateway-attached firewall.
+    Only used when 'transit_gateway_component_name' is set, not used when using 'vpc_component_name'.
+
+    If not specified (empty list), all available AZs in the region will be automatically selected.
+    If specified, must use AZ ID format (e.g., 'use1-az1', 'usw2-az2'), not AZ names (e.g., 'us-east-1a').
+
+    Example: ["use1-az1", "use1-az2"]
+    EOT
   default     = []
 
   validation {
