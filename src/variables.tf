@@ -5,7 +5,19 @@ variable "region" {
 
 variable "vpc_component_name" {
   type        = string
-  description = "The name of a VPC component where the Network Firewall is provisioned"
+  description = "The name of a VPC component where the Network Firewall is provisioned. Either 'vpc_component_name' or 'transit_gateway_component_name' must be provided, but not both"
+  default     = null
+}
+
+variable "transit_gateway_component_name" {
+  type        = string
+  description = "The name of a Transit Gateway component to attach the Network Firewall to. Either 'vpc_component_name' or 'transit_gateway_component_name' must be provided, but not both"
+  default     = null
+
+  validation {
+    condition     = var.transit_gateway_component_name == null || can(regex("^[a-zA-Z0-9-_]+$", var.transit_gateway_component_name))
+    error_message = "The transit_gateway_component_name must contain only alphanumeric characters, hyphens, and underscores."
+  }
 }
 
 variable "network_firewall_name" {
@@ -108,6 +120,17 @@ variable "alert_logs_bucket_component_name" {
 
 variable "firewall_subnet_name" {
   type        = string
-  description = "Firewall subnet name"
+  description = "Firewall subnet name. Required when using 'vpc_component_name', not used when using 'transit_gateway_component_name'"
   default     = "firewall"
+}
+
+variable "deployment_mode" {
+  type        = string
+  description = "Deployment mode for the Network Firewall. Valid values: 'vpc' or 'transit_gateway'"
+  default     = null
+
+  validation {
+    condition     = var.deployment_mode == null || contains(["vpc", "transit_gateway"], var.deployment_mode)
+    error_message = "The deployment_mode must be either 'vpc' or 'transit_gateway'."
+  }
 }
