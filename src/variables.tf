@@ -5,7 +5,14 @@ variable "region" {
 
 variable "vpc_component_name" {
   type        = string
-  description = "The name of a VPC component where the Network Firewall is provisioned"
+  description = "The name of a VPC component where the Network Firewall is provisioned. Either 'vpc_component_name' or 'transit_gateway_component_name' must be provided, but not both"
+  default     = null
+}
+
+variable "transit_gateway_component_name" {
+  type        = string
+  description = "The name of a Transit Gateway component to attach the Network Firewall to. Either 'vpc_component_name' or 'transit_gateway_component_name' must be provided, but not both"
+  default     = null
 }
 
 variable "network_firewall_name" {
@@ -108,6 +115,25 @@ variable "alert_logs_bucket_component_name" {
 
 variable "firewall_subnet_name" {
   type        = string
-  description = "Firewall subnet name"
+  description = "Firewall subnet name. Required when using 'vpc_component_name', not used when using 'transit_gateway_component_name'"
   default     = "firewall"
+}
+
+variable "availability_zone_ids" {
+  type        = list(string)
+  description = <<-EOT
+    List of Availability Zone IDs where firewall endpoints will be created for a transit gateway-attached firewall.
+    Only used when 'transit_gateway_component_name' is set, not used when using 'vpc_component_name'.
+
+    If not specified (empty list), all available AZs in the region will be automatically selected.
+    If specified, must use AZ ID format (e.g., 'use1-az1', 'usw2-az2'), not AZ names (e.g., 'us-east-1a').
+
+    Example: ["use1-az1", "use1-az2"]
+    EOT
+  default     = []
+
+  validation {
+    condition     = length(var.availability_zone_ids) == 0 || alltrue([for az in var.availability_zone_ids : can(regex("^[a-z]+[0-9]+-az[0-9]+[a-z]?$", az))])
+    error_message = "Each availability_zone_id must be in the format like 'use1-az1', 'usw2-az2', etc."
+  }
 }
