@@ -7,8 +7,8 @@ module "vpc" {
   bypass = var.vpc_component_name == null || var.vpc_component_name == ""
 
   defaults = {
-    vpc_id                      = ""
-    named_private_subnets_map   = {}
+    vpc_id                    = ""
+    named_private_subnets_map = {}
   }
 
   context = module.this.context
