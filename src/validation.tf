@@ -14,6 +14,11 @@ resource "null_resource" "validate_deployment_mode" {
     }
 
     precondition {
+      condition     = !local.is_vpc_mode || contains(keys(local.vpc_outputs.named_private_subnets_map), var.firewall_subnet_name)
+      error_message = "When using VPC mode, the 'firewall_subnet_name' (${var.firewall_subnet_name}) must exist in the VPC component's named_private_subnets_map. Available subnet names: ${join(", ", keys(local.vpc_outputs.named_private_subnets_map))}"
+    }
+
+    precondition {
       condition     = !local.is_tgw_mode || var.firewall_subnet_name == "firewall"
       error_message = "When using Transit Gateway mode (transit_gateway_component_name is set), 'firewall_subnet_name' is not used and should be left at default."
     }
