@@ -119,6 +119,17 @@ variable "firewall_subnet_name" {
   default     = "firewall"
 }
 
+variable "availability_zone_ids" {
+  type        = list(string)
+  description = "List of Availability Zone IDs where firewall endpoints will be created for a transit gateway-attached firewall. Required when using 'transit_gateway_component_name', not used when using 'vpc_component_name'"
+  default     = []
+
+  validation {
+    condition     = length(var.availability_zone_ids) == 0 || alltrue([for az in var.availability_zone_ids : can(regex("^[a-z]{2,3}-[a-z]+-[0-9][a-z]$", az))])
+    error_message = "Each availability_zone_id must be in the format like 'use1-az1', 'usw2-az2', etc."
+  }
+}
+
 variable "deployment_mode" {
   type        = string
   description = "Deployment mode for the Network Firewall. Valid values: 'vpc' or 'transit_gateway'"

@@ -41,7 +41,7 @@ locals {
 
 module "network_firewall" {
   source  = "cloudposse/network-firewall/aws"
-  version = "1.0.0"
+  version = "1.0.1"
 
   # VPC mode: attach firewall to VPC subnets
   # Either 'vpc_id' or 'transit_gateway_id' must be provided, but not both
@@ -49,7 +49,9 @@ module "network_firewall" {
   subnet_ids = local.is_vpc_mode ? local.firewall_subnet_ids : []
 
   # Transit Gateway mode: attach firewall directly to Transit Gateway
-  transit_gateway_id = local.transit_gateway_id
+  # Uses availability_zone_ids instead of subnet_ids
+  transit_gateway_id   = local.transit_gateway_id
+  availability_zone_ids = local.is_tgw_mode ? var.availability_zone_ids : []
 
   network_firewall_name                     = var.network_firewall_name
   network_firewall_description              = var.network_firewall_description
