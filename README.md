@@ -299,11 +299,15 @@ components:
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0.0 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 4.9.0, < 6.0.0 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.5.0 |
+| <a name="requirement_null"></a> [null](#requirement\_null) | >= 3.0 |
 
 ## Providers
 
-No providers.
+| Name | Version |
+|------|---------|
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.5.0 |
+| <a name="provider_null"></a> [null](#provider\_null) | >= 3.0 |
 
 ## Modules
 
@@ -312,13 +316,17 @@ No providers.
 | <a name="module_alert_logs_bucket"></a> [alert\_logs\_bucket](#module\_alert\_logs\_bucket) | cloudposse/stack-config/yaml//modules/remote-state | 1.8.0 |
 | <a name="module_flow_logs_bucket"></a> [flow\_logs\_bucket](#module\_flow\_logs\_bucket) | cloudposse/stack-config/yaml//modules/remote-state | 1.8.0 |
 | <a name="module_iam_roles"></a> [iam\_roles](#module\_iam\_roles) | ../account-map/modules/iam-roles | n/a |
-| <a name="module_network_firewall"></a> [network\_firewall](#module\_network\_firewall) | cloudposse/network-firewall/aws | 0.3.2 |
+| <a name="module_network_firewall"></a> [network\_firewall](#module\_network\_firewall) | cloudposse/network-firewall/aws | 1.0.1 |
 | <a name="module_this"></a> [this](#module\_this) | cloudposse/label/null | 0.25.0 |
+| <a name="module_transit_gateway"></a> [transit\_gateway](#module\_transit\_gateway) | cloudposse/stack-config/yaml//modules/remote-state | 1.8.0 |
 | <a name="module_vpc"></a> [vpc](#module\_vpc) | cloudposse/stack-config/yaml//modules/remote-state | 1.8.0 |
 
 ## Resources
 
-No resources.
+| Name | Type |
+|------|------|
+| [null_resource.validate_deployment_mode](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
+| [aws_availability_zones.available](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/availability_zones) | data source |
 
 ## Inputs
 
@@ -327,6 +335,7 @@ No resources.
 | <a name="input_additional_tag_map"></a> [additional\_tag\_map](#input\_additional\_tag\_map) | Additional key-value pairs to add to each map in `tags_as_list_of_maps`. Not added to `tags` or `id`.<br/>This is for some rare cases where resources want additional configuration of tags<br/>and therefore take a list of maps with tag key, value, and additional configuration. | `map(string)` | `{}` | no |
 | <a name="input_alert_logs_bucket_component_name"></a> [alert\_logs\_bucket\_component\_name](#input\_alert\_logs\_bucket\_component\_name) | Alert logs bucket component name | `string` | `null` | no |
 | <a name="input_attributes"></a> [attributes](#input\_attributes) | ID element. Additional attributes (e.g. `workers` or `cluster`) to add to `id`,<br/>in the order they appear in the list. New attributes are appended to the<br/>end of the list. The elements of the list are joined by the `delimiter`<br/>and treated as a single ID element. | `list(string)` | `[]` | no |
+| <a name="input_availability_zone_ids"></a> [availability\_zone\_ids](#input\_availability\_zone\_ids) | List of Availability Zone IDs where firewall endpoints will be created for a transit gateway-attached firewall.<br/>Only used when 'transit\_gateway\_component\_name' is set, not used when using 'vpc\_component\_name'.<br/><br/>If not specified (empty list), all available AZs in the region will be automatically selected.<br/>If specified, must use AZ ID format (e.g., 'use1-az1', 'usw2-az2'), not AZ names (e.g., 'us-east-1a').<br/><br/>Example: ["use1-az1", "use1-az2"] | `list(string)` | `[]` | no |
 | <a name="input_context"></a> [context](#input\_context) | Single object for setting entire context at once.<br/>See description of individual variables for details.<br/>Leave string and numeric variables as `null` to use default value.<br/>Individual variable settings (non-null) override settings in context object,<br/>except for attributes, tags, and additional\_tag\_map, which are merged. | `any` | <pre>{<br/>  "additional_tag_map": {},<br/>  "attributes": [],<br/>  "delimiter": null,<br/>  "descriptor_formats": {},<br/>  "enabled": true,<br/>  "environment": null,<br/>  "id_length_limit": null,<br/>  "label_key_case": null,<br/>  "label_order": [],<br/>  "label_value_case": null,<br/>  "labels_as_tags": [<br/>    "unset"<br/>  ],<br/>  "name": null,<br/>  "namespace": null,<br/>  "regex_replace_chars": null,<br/>  "stage": null,<br/>  "tags": {},<br/>  "tenant": null<br/>}</pre> | no |
 | <a name="input_delete_protection"></a> [delete\_protection](#input\_delete\_protection) | A boolean flag indicating whether it is possible to delete the firewall | `bool` | `false` | no |
 | <a name="input_delimiter"></a> [delimiter](#input\_delimiter) | Delimiter to be used between ID elements.<br/>Defaults to `-` (hyphen). Set to `""` to use no delimiter at all. | `string` | `null` | no |
@@ -334,7 +343,7 @@ No resources.
 | <a name="input_enabled"></a> [enabled](#input\_enabled) | Set to false to prevent the module from creating any resources | `bool` | `null` | no |
 | <a name="input_environment"></a> [environment](#input\_environment) | ID element. Usually used for region e.g. 'uw2', 'us-west-2', OR role 'prod', 'staging', 'dev', 'UAT' | `string` | `null` | no |
 | <a name="input_firewall_policy_change_protection"></a> [firewall\_policy\_change\_protection](#input\_firewall\_policy\_change\_protection) | A boolean flag indicating whether it is possible to change the associated firewall policy | `bool` | `false` | no |
-| <a name="input_firewall_subnet_name"></a> [firewall\_subnet\_name](#input\_firewall\_subnet\_name) | Firewall subnet name | `string` | `"firewall"` | no |
+| <a name="input_firewall_subnet_name"></a> [firewall\_subnet\_name](#input\_firewall\_subnet\_name) | Firewall subnet name. Required when using 'vpc\_component\_name', not used when using 'transit\_gateway\_component\_name' | `string` | `"firewall"` | no |
 | <a name="input_flow_logs_bucket_component_name"></a> [flow\_logs\_bucket\_component\_name](#input\_flow\_logs\_bucket\_component\_name) | Flow logs bucket component name | `string` | `null` | no |
 | <a name="input_id_length_limit"></a> [id\_length\_limit](#input\_id\_length\_limit) | Limit `id` to this many characters (minimum 6).<br/>Set to `0` for unlimited length.<br/>Set to `null` for keep the existing setting, which defaults to `0`.<br/>Does not affect `id_full`. | `number` | `null` | no |
 | <a name="input_label_key_case"></a> [label\_key\_case](#input\_label\_key\_case) | Controls the letter case of the `tags` keys (label names) for tags generated by this module.<br/>Does not affect keys of tags passed in via the `tags` input.<br/>Possible values: `lower`, `title`, `upper`.<br/>Default value: `title`. | `string` | `null` | no |
@@ -359,18 +368,21 @@ No resources.
 | <a name="input_subnet_change_protection"></a> [subnet\_change\_protection](#input\_subnet\_change\_protection) | A boolean flag indicating whether it is possible to change the associated subnet(s) | `bool` | `false` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | Additional tags (e.g. `{'BusinessUnit': 'XYZ'}`).<br/>Neither the tag keys nor the tag values will be modified by this module. | `map(string)` | `{}` | no |
 | <a name="input_tenant"></a> [tenant](#input\_tenant) | ID element \_(Rarely used, not included by default)\_. A customer identifier, indicating who this instance of a resource is for | `string` | `null` | no |
-| <a name="input_vpc_component_name"></a> [vpc\_component\_name](#input\_vpc\_component\_name) | The name of a VPC component where the Network Firewall is provisioned | `string` | n/a | yes |
+| <a name="input_transit_gateway_component_name"></a> [transit\_gateway\_component\_name](#input\_transit\_gateway\_component\_name) | The name of a Transit Gateway component to attach the Network Firewall to. Either 'vpc\_component\_name' or 'transit\_gateway\_component\_name' must be provided, but not both | `string` | `null` | no |
+| <a name="input_vpc_component_name"></a> [vpc\_component\_name](#input\_vpc\_component\_name) | The name of a VPC component where the Network Firewall is provisioned. Either 'vpc\_component\_name' or 'transit\_gateway\_component\_name' must be provided, but not both | `string` | `null` | no |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
-| <a name="output_az_subnet_endpoint_stats"></a> [az\_subnet\_endpoint\_stats](#output\_az\_subnet\_endpoint\_stats) | List of objects with each object having three items: AZ, subnet ID, VPC endpoint ID |
+| <a name="output_az_subnet_endpoint_stats"></a> [az\_subnet\_endpoint\_stats](#output\_az\_subnet\_endpoint\_stats) | List of objects with each object having three items: AZ, subnet ID, VPC endpoint ID. Only applicable in VPC mode |
 | <a name="output_network_firewall_arn"></a> [network\_firewall\_arn](#output\_network\_firewall\_arn) | Network Firewall ARN |
 | <a name="output_network_firewall_name"></a> [network\_firewall\_name](#output\_network\_firewall\_name) | Network Firewall name |
 | <a name="output_network_firewall_policy_arn"></a> [network\_firewall\_policy\_arn](#output\_network\_firewall\_policy\_arn) | Network Firewall policy ARN |
 | <a name="output_network_firewall_policy_name"></a> [network\_firewall\_policy\_name](#output\_network\_firewall\_policy\_name) | Network Firewall policy name |
 | <a name="output_network_firewall_status"></a> [network\_firewall\_status](#output\_network\_firewall\_status) | Nested list of information about the current status of the Network Firewall |
+| <a name="output_transit_gateway_attachment_id"></a> [transit\_gateway\_attachment\_id](#output\_transit\_gateway\_attachment\_id) | The unique identifier of the transit gateway attachment. Only applicable in Transit Gateway mode |
+| <a name="output_transit_gateway_owner_account_id"></a> [transit\_gateway\_owner\_account\_id](#output\_transit\_gateway\_owner\_account\_id) | The AWS account ID that owns the transit gateway. Only applicable in Transit Gateway mode |
 <!-- markdownlint-restore -->
 
 
