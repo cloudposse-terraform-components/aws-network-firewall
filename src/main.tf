@@ -30,7 +30,7 @@ locals {
     }
   } : {}
 
-  # VPC-specific outputs (only used in VPC mode
+  # VPC-specific outputs (only used in VPC mode)
   vpc_outputs         = local.is_vpc_mode ? module.vpc.outputs : {}
   firewall_subnet_ids = local.is_vpc_mode ? try(local.vpc_outputs.named_private_subnets_map[var.firewall_subnet_name], []) : []
 

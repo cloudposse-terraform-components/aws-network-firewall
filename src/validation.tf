@@ -19,11 +19,6 @@ resource "null_resource" "validate_deployment_mode" {
     }
 
     precondition {
-      condition     = !local.is_tgw_mode || var.firewall_subnet_name == "firewall"
-      error_message = "When using Transit Gateway mode (transit_gateway_component_name is set), 'firewall_subnet_name' is not used and should be left at default."
-    }
-
-    precondition {
       condition     = !local.is_tgw_mode || length(local.availability_zone_ids) > 0
       error_message = "When using Transit Gateway mode (transit_gateway_component_name is set), 'availability_zone_ids' must be provided or available AZs must be auto-detected. Failed to determine Availability Zones."
     }

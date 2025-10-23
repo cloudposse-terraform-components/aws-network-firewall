@@ -4,7 +4,8 @@ module "vpc" {
 
   component = var.vpc_component_name
 
-  bypass = var.vpc_component_name == null || var.vpc_component_name == ""
+  # Only load VPC remote state in VPC mode
+  bypass = !local.is_vpc_mode
 
   defaults = {
     vpc_id                    = ""
@@ -20,7 +21,8 @@ module "transit_gateway" {
 
   component = var.transit_gateway_component_name
 
-  bypass = var.transit_gateway_component_name == null || var.transit_gateway_component_name == ""
+  # Only load Transit Gateway remote state in TGW mode
+  bypass = !local.is_tgw_mode
 
   defaults = {
     transit_gateway_id  = ""

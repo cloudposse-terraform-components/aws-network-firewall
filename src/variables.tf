@@ -137,14 +137,3 @@ variable "availability_zone_ids" {
     error_message = "Each availability_zone_id must be in the format like 'use1-az1', 'usw2-az2', etc."
   }
 }
-
-variable "deployment_mode" {
-  type        = string
-  description = "Deployment mode for the Network Firewall. Valid values: 'vpc' or 'transit_gateway'"
-  default     = null
-
-  validation {
-    condition     = var.deployment_mode == null || contains(["vpc", "transit_gateway"], var.deployment_mode)
-    error_message = "The deployment_mode must be either 'vpc' or 'transit_gateway'."
-  }
-}
