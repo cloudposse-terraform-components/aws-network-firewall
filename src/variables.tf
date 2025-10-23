@@ -133,7 +133,7 @@ variable "availability_zone_ids" {
   default     = []
 
   validation {
-    condition     = length(var.availability_zone_ids) == 0 || alltrue([for az in var.availability_zone_ids : can(regex("^[a-z]{2,3}-[a-z]+-[0-9][a-z]$", az))])
+    condition     = length(var.availability_zone_ids) == 0 || alltrue([for az in var.availability_zone_ids : can(regex("^[a-z]+[0-9]+-az[0-9]+[a-z]?$", az))])
     error_message = "Each availability_zone_id must be in the format like 'use1-az1', 'usw2-az2', etc."
   }
 }
