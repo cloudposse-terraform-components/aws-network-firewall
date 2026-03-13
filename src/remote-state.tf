@@ -1,6 +1,6 @@
 module "vpc" {
   source  = "cloudposse/stack-config/yaml//modules/remote-state"
-  version = "1.8.0"
+  version = "2.0.0"
 
   component = var.vpc_component_name
 
@@ -17,7 +17,7 @@ module "vpc" {
 
 module "transit_gateway" {
   source  = "cloudposse/stack-config/yaml//modules/remote-state"
-  version = "1.8.0"
+  version = "2.0.0"
 
   component = var.transit_gateway_component_name
 
@@ -34,7 +34,7 @@ module "transit_gateway" {
 
 module "flow_logs_bucket" {
   source  = "cloudposse/stack-config/yaml//modules/remote-state"
-  version = "1.8.0"
+  version = "2.0.0"
 
   component = var.flow_logs_bucket_component_name
 
@@ -50,7 +50,7 @@ module "flow_logs_bucket" {
 
 module "alert_logs_bucket" {
   source  = "cloudposse/stack-config/yaml//modules/remote-state"
-  version = "1.8.0"
+  version = "2.0.0"
 
   component = var.alert_logs_bucket_component_name
 
