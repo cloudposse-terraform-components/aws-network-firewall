@@ -5,13 +5,31 @@ variable "region" {
 
 variable "vpc_component_name" {
   type        = string
-  description = "The name of a VPC component where the Network Firewall is provisioned. Either 'vpc_component_name' or 'transit_gateway_component_name' must be provided, but not both"
+  description = "The name of a VPC component where the Network Firewall is provisioned. Ignored when 'vpc_id' is set. Either VPC mode ('vpc_component_name' or 'vpc_id') or 'transit_gateway_component_name' must be provided, but not both"
   default     = null
+}
+
+variable "vpc_id" {
+  type        = string
+  description = <<-EOT
+    ID of the VPC where the Network Firewall is provisioned. When set together with 'firewall_subnet_ids',
+    the VPC remote state lookup ('vpc_component_name') is skipped and these values are used instead.
+    Use this when the VPC is managed outside of this stack, or to pass the values with Atmos YAML functions
+    such as `!terraform.state` or `!store`.
+    EOT
+  default     = null
+}
+
+variable "firewall_subnet_ids" {
+  type        = list(string)
+  description = "IDs of the subnets for the Network Firewall endpoints. Required when 'vpc_id' is set, ignored otherwise"
+  default     = []
+  nullable    = false
 }
 
 variable "transit_gateway_component_name" {
   type        = string
-  description = "The name of a Transit Gateway component to attach the Network Firewall to. Either 'vpc_component_name' or 'transit_gateway_component_name' must be provided, but not both"
+  description = "The name of a Transit Gateway component to attach the Network Firewall to. Either VPC mode ('vpc_component_name' or 'vpc_id') or 'transit_gateway_component_name' must be provided, but not both"
   default     = null
 }
 
@@ -103,19 +121,39 @@ variable "logging_enabled" {
 
 variable "flow_logs_bucket_component_name" {
   type        = string
-  description = "Flow logs bucket component name"
+  description = "Flow logs bucket component name. Ignored when 'flow_logs_bucket_name' is set"
+  default     = null
+}
+
+variable "flow_logs_bucket_name" {
+  type        = string
+  description = <<-EOT
+    Name of the S3 bucket for Network Firewall flow logs. When set, the 'flow_logs_bucket_component_name'
+    remote state lookup is skipped. Use this for a bucket in another account or stack, for example a central
+    log archive bucket.
+    EOT
   default     = null
 }
 
 variable "alert_logs_bucket_component_name" {
   type        = string
-  description = "Alert logs bucket component name"
+  description = "Alert logs bucket component name. Ignored when 'alert_logs_bucket_name' is set"
+  default     = null
+}
+
+variable "alert_logs_bucket_name" {
+  type        = string
+  description = <<-EOT
+    Name of the S3 bucket for Network Firewall alert logs. When set, the 'alert_logs_bucket_component_name'
+    remote state lookup is skipped. Use this for a bucket in another account or stack, for example a central
+    log archive bucket.
+    EOT
   default     = null
 }
 
 variable "firewall_subnet_name" {
   type        = string
-  description = "Firewall subnet name. Required when using 'vpc_component_name', not used when using 'transit_gateway_component_name'"
+  description = "Firewall subnet name. Required when using 'vpc_component_name', not used when 'vpc_id' or 'transit_gateway_component_name' is set"
   default     = "firewall"
 }
 

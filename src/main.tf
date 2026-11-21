@@ -3,12 +3,21 @@ locals {
   logging_enabled = local.enabled && var.logging_enabled
 
   # Determine deployment mode
-  # Either 'vpc' or 'transit_gateway' based on which component name is provided
-  is_vpc_mode = var.vpc_component_name != null && var.vpc_component_name != ""
-  is_tgw_mode = var.transit_gateway_component_name != null && var.transit_gateway_component_name != ""
+  # Either 'vpc' or 'transit_gateway' based on which inputs are provided.
+  # VPC mode reads the VPC from the 'vpc_component_name' remote state, or takes 'vpc_id' and
+  # 'firewall_subnet_ids' directly.
+  vpc_from_inputs          = var.vpc_id != null && var.vpc_id != ""
+  vpc_from_component       = var.vpc_component_name != null && var.vpc_component_name != ""
+  vpc_remote_state_enabled = local.vpc_from_component && !local.vpc_from_inputs
+  is_vpc_mode              = local.vpc_from_component || local.vpc_from_inputs
+  is_tgw_mode              = var.transit_gateway_component_name != null && var.transit_gateway_component_name != ""
 
   # Validate that exactly one deployment mode is specified
   deployment_mode_valid = local.is_vpc_mode != local.is_tgw_mode
+
+  # Log destinations: a bucket name passed directly wins over the bucket component remote state
+  flow_logs_bucket_from_input  = var.flow_logs_bucket_name != null && var.flow_logs_bucket_name != ""
+  alert_logs_bucket_from_input = var.alert_logs_bucket_name != null && var.alert_logs_bucket_name != ""
 
   # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/networkfirewall_logging_configuration
   logging_config = local.logging_enabled ? {
@@ -16,7 +25,7 @@ locals {
       log_destination_type = "S3"
       log_type             = "FLOW"
       log_destination = {
-        bucketName = try(module.flow_logs_bucket.outputs.bucket_id, "")
+        bucketName = local.flow_logs_bucket_from_input ? var.flow_logs_bucket_name : try(module.flow_logs_bucket.outputs.bucket_id, "")
         prefix     = null
       }
     },
@@ -24,7 +33,7 @@ locals {
       log_destination_type = "S3"
       log_type             = "ALERT"
       log_destination = {
-        bucketName = try(module.alert_logs_bucket.outputs.bucket_id, "")
+        bucketName = local.alert_logs_bucket_from_input ? var.alert_logs_bucket_name : try(module.alert_logs_bucket.outputs.bucket_id, "")
         prefix     = null
       }
     }
@@ -33,10 +42,15 @@ locals {
   # VPC-specific outputs (only used in VPC mode).
   # Not wrapped in a `local.is_vpc_mode ? ... : {}` conditional: the remote-state
   # outputs object and `{}` have different types, which Terraform rejects with
-  # "Inconsistent conditional result types". In TGW mode `module.vpc` is bypassed
-  # and already returns its `defaults`.
-  vpc_outputs         = module.vpc.outputs
-  firewall_subnet_ids = local.is_vpc_mode ? try(local.vpc_outputs.named_private_subnets_map[var.firewall_subnet_name], []) : []
+  # "Inconsistent conditional result types". When the VPC remote state is not used,
+  # `module.vpc` is bypassed and already returns its `defaults`.
+  vpc_outputs = module.vpc.outputs
+  vpc_id = local.vpc_from_inputs ? var.vpc_id : (
+    local.is_vpc_mode ? local.vpc_outputs.vpc_id : null
+  )
+  firewall_subnet_ids = local.vpc_from_inputs ? var.firewall_subnet_ids : (
+    local.is_vpc_mode ? try(local.vpc_outputs.named_private_subnets_map[var.firewall_subnet_name], []) : []
+  )
 
   # Transit Gateway-specific outputs (only used in TGW mode).
   # Same as `vpc_outputs`: in VPC mode `module.transit_gateway` is bypassed and
@@ -60,8 +74,8 @@ module "network_firewall" {
 
   # VPC mode: attach firewall to VPC subnets
   # Either 'vpc_id' or 'transit_gateway_id' must be provided, but not both
-  vpc_id     = local.is_vpc_mode ? local.vpc_outputs.vpc_id : null
-  subnet_ids = local.is_vpc_mode ? local.firewall_subnet_ids : []
+  vpc_id     = local.vpc_id
+  subnet_ids = local.firewall_subnet_ids
 
   # Transit Gateway mode: attach firewall directly to Transit Gateway
   # Uses availability_zone_ids instead of subnet_ids

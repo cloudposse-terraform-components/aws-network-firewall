@@ -232,6 +232,31 @@ usage: |-
                     pass ip any any <> any any ( msg: "Allow general traffic"; sid:10000; rev:1; )
   ```
 
+  Example of a Network Firewall that takes the VPC and the log buckets as direct inputs instead of
+  remote state lookups. This is useful when the VPC or the log buckets are managed in another stack or
+  account (for example, a central log archive account), and the values are passed in with Atmos YAML
+  functions such as `!terraform.state` or `!store`:
+
+  ```yaml
+  components:
+    terraform:
+      network-firewall:
+        vars:
+          enabled: true
+          name: "network-firewall"
+
+          # Used instead of `vpc_component_name` / `firewall_subnet_name`
+          vpc_id: !terraform.state vpc vpc_id
+          firewall_subnet_ids: !terraform.state vpc .named_subnets.private.firewall
+
+          # Used instead of `flow_logs_bucket_component_name` / `alert_logs_bucket_component_name`
+          logging_enabled: true
+          flow_logs_bucket_name: !terraform.state network-firewall-logs-bucket-flow core-ue1-audit bucket_id
+          alert_logs_bucket_name: !terraform.state network-firewall-logs-bucket-alert core-ue1-audit bucket_id
+
+          rule_group_config: {}
+  ```
+
   <!-- prettier-ignore-start -->
   <!-- prettier-ignore-end -->
 references:
