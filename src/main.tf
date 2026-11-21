@@ -30,12 +30,18 @@ locals {
     }
   } : {}
 
-  # VPC-specific outputs (only used in VPC mode)
-  vpc_outputs         = local.is_vpc_mode ? module.vpc.outputs : {}
+  # VPC-specific outputs (only used in VPC mode).
+  # Not wrapped in a `local.is_vpc_mode ? ... : {}` conditional: the remote-state
+  # outputs object and `{}` have different types, which Terraform rejects with
+  # "Inconsistent conditional result types". In TGW mode `module.vpc` is bypassed
+  # and already returns its `defaults`.
+  vpc_outputs         = module.vpc.outputs
   firewall_subnet_ids = local.is_vpc_mode ? try(local.vpc_outputs.named_private_subnets_map[var.firewall_subnet_name], []) : []
 
-  # Transit Gateway-specific outputs (only used in TGW mode)
-  transit_gateway_outputs = local.is_tgw_mode ? module.transit_gateway.outputs : {}
+  # Transit Gateway-specific outputs (only used in TGW mode).
+  # Same as `vpc_outputs`: in VPC mode `module.transit_gateway` is bypassed and
+  # returns its `defaults`.
+  transit_gateway_outputs = module.transit_gateway.outputs
   transit_gateway_id      = local.is_tgw_mode ? try(local.transit_gateway_outputs.transit_gateway_id, null) : null
 
   # Availability Zone IDs for TGW mode
