@@ -297,41 +297,34 @@ components:
 ## Requirements
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0.0 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.5.0 |
 | <a name="requirement_null"></a> [null](#requirement\_null) | >= 3.0 |
 
-## Providers
-
-| Name | Version |
-|------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.5.0 |
-| <a name="provider_null"></a> [null](#provider\_null) | >= 3.0 |
-
 ## Modules
 
 | Name | Source | Version |
-|------|--------|---------|
-| <a name="module_alert_logs_bucket"></a> [alert\_logs\_bucket](#module\_alert\_logs\_bucket) | cloudposse/stack-config/yaml//modules/remote-state | 1.8.0 |
-| <a name="module_flow_logs_bucket"></a> [flow\_logs\_bucket](#module\_flow\_logs\_bucket) | cloudposse/stack-config/yaml//modules/remote-state | 1.8.0 |
+| ---- | ------ | ------- |
+| <a name="module_alert_logs_bucket"></a> [alert\_logs\_bucket](#module\_alert\_logs\_bucket) | cloudposse/stack-config/yaml//modules/remote-state | 2.0.1 |
+| <a name="module_flow_logs_bucket"></a> [flow\_logs\_bucket](#module\_flow\_logs\_bucket) | cloudposse/stack-config/yaml//modules/remote-state | 2.0.1 |
 | <a name="module_iam_roles"></a> [iam\_roles](#module\_iam\_roles) | ../account-map/modules/iam-roles | n/a |
 | <a name="module_network_firewall"></a> [network\_firewall](#module\_network\_firewall) | cloudposse/network-firewall/aws | 1.0.1 |
 | <a name="module_this"></a> [this](#module\_this) | cloudposse/label/null | 0.25.0 |
-| <a name="module_transit_gateway"></a> [transit\_gateway](#module\_transit\_gateway) | cloudposse/stack-config/yaml//modules/remote-state | 1.8.0 |
-| <a name="module_vpc"></a> [vpc](#module\_vpc) | cloudposse/stack-config/yaml//modules/remote-state | 1.8.0 |
+| <a name="module_transit_gateway"></a> [transit\_gateway](#module\_transit\_gateway) | cloudposse/stack-config/yaml//modules/remote-state | 2.0.1 |
+| <a name="module_vpc"></a> [vpc](#module\_vpc) | cloudposse/stack-config/yaml//modules/remote-state | 2.0.1 |
 
 ## Resources
 
 | Name | Type |
-|------|------|
+| ---- | ---- |
 | [null_resource.validate_deployment_mode](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
 | [aws_availability_zones.available](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/availability_zones) | data source |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
+| ---- | ----------- | ---- | ------- | :------: |
 | <a name="input_additional_tag_map"></a> [additional\_tag\_map](#input\_additional\_tag\_map) | Additional key-value pairs to add to each map in `tags_as_list_of_maps`. Not added to `tags` or `id`.<br/>This is for some rare cases where resources want additional configuration of tags<br/>and therefore take a list of maps with tag key, value, and additional configuration. | `map(string)` | `{}` | no |
 | <a name="input_alert_logs_bucket_component_name"></a> [alert\_logs\_bucket\_component\_name](#input\_alert\_logs\_bucket\_component\_name) | Alert logs bucket component name | `string` | `null` | no |
 | <a name="input_attributes"></a> [attributes](#input\_attributes) | ID element. Additional attributes (e.g. `workers` or `cluster`) to add to `id`,<br/>in the order they appear in the list. New attributes are appended to the<br/>end of the list. The elements of the list are joined by the `delimiter`<br/>and treated as a single ID element. | `list(string)` | `[]` | no |
@@ -374,7 +367,7 @@ components:
 ## Outputs
 
 | Name | Description |
-|------|-------------|
+| ---- | ----------- |
 | <a name="output_az_subnet_endpoint_stats"></a> [az\_subnet\_endpoint\_stats](#output\_az\_subnet\_endpoint\_stats) | List of objects with each object having three items: AZ, subnet ID, VPC endpoint ID. Only applicable in VPC mode |
 | <a name="output_network_firewall_arn"></a> [network\_firewall\_arn](#output\_network\_firewall\_arn) | Network Firewall ARN |
 | <a name="output_network_firewall_name"></a> [network\_firewall\_name](#output\_network\_firewall\_name) | Network Firewall name |
