@@ -15,7 +15,7 @@ resource "null_resource" "validate_deployment_mode" {
 
     precondition {
       condition     = !local.vpc_remote_state_enabled || try(contains(keys(local.vpc_outputs.named_private_subnets_map), var.firewall_subnet_name), false)
-      error_message = "When using VPC mode, the 'firewall_subnet_name' (${var.firewall_subnet_name}) must exist in the VPC component's named_private_subnets_map. Available subnet names: ${try(join(", ", keys(local.vpc_outputs.named_private_subnets_map)), "none")}"
+      error_message = "When using VPC mode, the 'firewall_subnet_name' (${coalesce(var.firewall_subnet_name, "unset")}) must exist in the VPC component's named_private_subnets_map. Available subnet names: ${try(join(", ", keys(local.vpc_outputs.named_private_subnets_map)), "none")}"
     }
 
     precondition {

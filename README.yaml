@@ -254,6 +254,9 @@ usage: |-
           flow_logs_bucket_name: !terraform.state network-firewall-logs-bucket-flow core-ue1-audit bucket_id
           alert_logs_bucket_name: !terraform.state network-firewall-logs-bucket-alert core-ue1-audit bucket_id
 
+          # The default `stateful_default_actions` (`aws:alert_strict`) requires strict rule order
+          policy_stateful_engine_options_rule_order: "STRICT_ORDER"
+
           rule_group_config: {}
   ```
 
