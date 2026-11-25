@@ -4,8 +4,8 @@ module "vpc" {
 
   component = var.vpc_component_name
 
-  # Only load VPC remote state in VPC mode
-  bypass = !local.is_vpc_mode
+  # Only load VPC remote state in VPC mode, and only when 'vpc_id' is not passed directly
+  bypass = !local.vpc_remote_state_enabled
 
   defaults = {
     vpc_id                    = ""
@@ -38,7 +38,7 @@ module "flow_logs_bucket" {
 
   component = var.flow_logs_bucket_component_name
 
-  bypass = !local.logging_enabled || var.flow_logs_bucket_component_name == null || var.flow_logs_bucket_component_name == ""
+  bypass = !local.logging_enabled || local.flow_logs_bucket_from_input || var.flow_logs_bucket_component_name == null || var.flow_logs_bucket_component_name == ""
 
   defaults = {
     bucket_id  = ""
@@ -54,7 +54,7 @@ module "alert_logs_bucket" {
 
   component = var.alert_logs_bucket_component_name
 
-  bypass = !local.logging_enabled || var.alert_logs_bucket_component_name == null || var.alert_logs_bucket_component_name == ""
+  bypass = !local.logging_enabled || local.alert_logs_bucket_from_input || var.alert_logs_bucket_component_name == null || var.alert_logs_bucket_component_name == ""
 
   defaults = {
     bucket_id  = ""
